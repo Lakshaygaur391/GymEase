@@ -1,4 +1,5 @@
 require('dotenv').config();
+const connectDB = require('./Databaseconnections/conn');
 
 const express = require('express');
 const cors = require('cors');
@@ -21,27 +22,32 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.json());
 
-// MongoDB connection
-const connectDB = require('./Databaseconnections/conn');
+
 // Routes
-const gymroute = require('./Routes/gymroute');
-const membershipRoute = require('./Routes/membershipRoute');
-const memberRoute = require('./Routes/memberRoute');
+app.use(express.json());
+
+const connectDB = require('./Databaseconnections/conn');
+
 app.use(async (req, res, next) => {
   try {
     await connectDB();
     next();
   } catch (error) {
-    console.error('Database connection failed:', error);
-    res.status(500).json({
+    console.error('Database connection failed:', error.message);
+
+    return res.status(500).json({
       message: 'Database connection failed'
     });
   }
 });
+
+const gymroute = require('./Routes/gymroute');
+const membershipRoute = require('./Routes/membershipRoute');
+const memberRoute = require('./Routes/memberRoute');
+
 app.use('/auth', gymroute);
 app.use('/membership', membershipRoute);
 app.use('/member', memberRoute);
-
 // Test route
 app.get('/', (req, res) => {
   res.json({
@@ -67,17 +73,12 @@ app.get('/db-test', async (req, res) => {
 
 // Start server locally
 if (require.main === module) {
-  connectDB()
-    .then(() => {
-      app.listen(PORT, () => {
-        console.log(`GymEase Backend listening at http://localhost:${PORT}`);
-      });
-    })
-    .catch((error) => {
-      console.error('Failed to start server:', error.message);
-      process.exit(1);
-    });
+  app.listen(PORT, () => {
+    console.log(`GymEase Backend listening at http://localhost:${PORT}`);
+  });
 }
+
+module.exports = app;
 
 module.exports = app;
 
