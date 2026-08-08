@@ -2,7 +2,7 @@ import axios from 'axios';
 
 
 const API = axios.create({
-  baseURL: 'https://gym-ease-git-main-procoders4.vercel.app/' || 'http://localhost:8000',
+  baseURL: 'https://gym-ease-git-main-procoders4.vercel.app' || 'http://localhost:8000',
   withCredentials: true
 });
 
