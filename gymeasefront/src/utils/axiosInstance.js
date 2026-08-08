@@ -1,19 +1,23 @@
 import axios from 'axios';
 
-
 const API = axios.create({
-  baseURL: 'https://gym-ease-git-main-procoders4.vercel.app' || 'http://localhost:8000',
+  baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true
 });
 
-API.interceptors.request.use((config) => {
-  const token = sessionStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+API.interceptors.request.use(
+  (config) => {
+    const token = sessionStorage.getItem('token');
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
-  return config;
-}, (error) => {
-  return Promise.reject(error);
-});
+);
 
 export default API;
